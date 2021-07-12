@@ -1,0 +1,49 @@
+
+<%-include('partials/header')%>
+
+<div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h2 class="h1 display-4"><%=quiz.title%></h2>
+    <p class="font-weight-bold">par <%=quiz.author.fullname%></p>
+    <h3 class="h4 display-6">Vous avez obtenu un score de <%= score %>/<%= quiz.questions.length %>  </h2>
+</div>
+<div class="row">
+    <%# la propriété tags de l'objet quiz contien un tableau d'instances de Tag, je peux donc boucler sur ce tableau %>
+    <% for (const tag of quiz.tags) { %>
+        <div class="col-3 p-4 text-center">
+            <a class="btn btn-block btn-lg tag tag--<%=tag.name.toLowerCase()%>" href="/tag/<%=tag.id%>">
+                <%=tag.name%>
+            </a>
+        </div>
+    <% } %>
+</div>
+<div class="row">
+    <% let questionNumber = 1; %>
+    <%for (const question of quiz.questions){%>
+        <%# On récupère la réponse de l'utilisateur à chaque nouvelle question et on la transforme en number pour la comparer %>
+        <% const userAnswer = parseInt(userAnswers[`question_${questionNumber}`], 10) %> 
+        <div class="col-12">
+            <label class="badge level level--<%=question.level.name.toLowerCase()%>"><%=question.level.name%></label>
+            <h4>
+                <%=question.question%>
+            </h4>
+            <%# du côté de la vue je me retrouve avec une propriété "answers" qui contient une liste de "answer". Je vais donc pouvoir bouclé sur ce tableau afin de récupérer les informations de chaque réponse possible.%>
+            <ol>
+            <% let answerNumber = 1; %> 
+            <% for (const answer of question.answers){%>
+                <%# On met la bonne réponse en vert %>
+                <% if(answer.id === question.answer_id) {%>
+                    <li style="color: green;font-weight: bold;"><%=answer.description%></li>
+                <%# SI besoin, on met la mauvaise réponse en rouge, SI l'utilisateur a une réponse correcte, on ne passera jamais dans cette condition %>
+                <% } else if (answerNumber === userAnswer) {%>
+                    <li style="color:red;text-decoration:line-through;"><%=answer.description%></li>
+                <% } else { %>
+                    <li><%=answer.description%></li>
+                <% } %> 
+                <% answerNumber++; %> 
+            <%}%>
+            </ol>
+        </div>
+        <% questionNumber++; %> 
+    <%}%>
+</div>
+<%-include('partials/footer')%>
